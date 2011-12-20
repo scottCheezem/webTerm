@@ -14,7 +14,7 @@ staticLoadScript("http://code.jquery.com/jquery-latest.min.js");
 
 
 }
-</script> 
+</script>
 
 <style type='text/css'>
 @font-face{
@@ -41,7 +41,7 @@ font-size:45px;
 }
 .charSpace{
     display:inline-block;
-    
+
     font-size:45px;
     color:#66ff00;
     opacity:0;
@@ -54,7 +54,7 @@ font-size:45px;
     color:#66ff00;
     font-size:45px;
     display:inline-block;
-    
+
 
 }
 
@@ -125,7 +125,7 @@ function shellCommand(n, h, m){
     this.name = n;
     this.help = h;
     this.exe = function(input){stopCountDown() ; m(input) ; inputOpen = true ; startCountDown(30)}
-    //this.exe = m; 
+    //this.exe = m;
     //console.log(this.name);
     commands.push(this);
 }
@@ -138,7 +138,7 @@ var help = new shellCommand("help", "print a help message", function(){
 
     for (var c in commands){
         echo.exe(commands[c].name+" - "+commands[c].help);
-    
+
     }
 
 });
@@ -180,12 +180,12 @@ var reset = new shellCommand("reset", "reset the terminal (reloads page)", funct
 
 
 var reddit = new shellCommand("reddit", "The Front Page of the Intenet", function(count){
-    
+
     echo.exe("Reddit - The Front Page of the Intenet");
-    
+
     redditText= "";
-    
-    $.getJSON("http://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) { 
+
+    $.getJSON("http://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) {
         //console.log(data);
         redditdata = data;
         reddits = data.data.children;
@@ -199,25 +199,44 @@ var reddit = new shellCommand("reddit", "The Front Page of the Intenet", functio
                 //console.log(selfText);
             }
             redditText = redditText + post.title+" \\\\ \\\\ "+selfText+" submited by "+post.author+" \\\\ to "+post.subreddit+" \\\\ "+ convertDate(post.created_utc) +" \\\\ \\\\ ";
-        
+
         }
         timedPrint(redditText, 75);
     });
-        
-    
-    
+
+
+
 });
 
 
+var twitter = new shellCommand("twitter", "The Twitters", function(input) {
+  // validate that we have input
+  if (!input[0]) {
+    echo.exe("username is required. twitter <username>");
+  } else {
+    echo.exe("What "+input[0]+" has to say on the twitters...");
 
+    var twitterText = "";
+    $.getJSON("https://api.twitter.com/1/statuses/user_timeline.json?screen_name="+input[0]+"&count=10&callback=?", function(tweets) {
+      var twitterText = "\\\\ ";
+      for (t in tweets) {
+        var tweetDate = new Date(tweets[t].created_at);
+        twitterText = twitterText+tweets[t].text;
+        twitterText = twitterText+" \\\\ Posted On: "+tweetDate.toString()+" \\\\ \\\\ ";
+      }
+
+      timedPrint(twitterText, 75);
+    });
+  }
+});
 
 function timedPrint(input, interval){
     stopPrinting  = function(){
             //document.body.removeEventListener("keypress");
             //console.log("stopping print");
-            
+
             window.onkeypress = null;
-            
+
             clearInterval(timer);
             $('#prompt').show();
             $('#input').show();
@@ -226,8 +245,8 @@ function timedPrint(input, interval){
             //clear.exe();
             reddit.exe();
             //startCountDown(10);
-    
-    
+
+
     }
 
     $('#prompt').hide();
@@ -236,24 +255,24 @@ function timedPrint(input, interval){
 
     charWidth = $('.cursor').width();
     rowWidth = $('#screen').width();
-    
+
     //the number of character spaces in a row is…
     charSpace = parseInt(rowWidth/charWidth);
     charCount = 0;
-    
+
 
     i=0;
     w=0;
     c=0;
-    printWords = input.replace(/ /g, "| |").replace(/\|\|/g, "|").split('|');    
-    
+    printWords = input.replace(/ /g, "| |").replace(/\|\|/g, "|").split('|');
+
     timer = setInterval(function(){
         window.onkeypress = function(){
             console.log(this);
             console.log("key pressed");
             stopPrinting();
         }
-        
+
         if(printWords[w] == "\\\\"){
             w++;
             c=0;
@@ -266,34 +285,34 @@ function timedPrint(input, interval){
 
 
          $('<p class="charSpace animateIn">'+htmlSpecials(printWords[w][c])+'</p>').insertBefore('.cursor');
-    
-        
+
+
         charCount++;
-        
+
         if(printWords[w].length-1 == c){
-        
+
             c=0;
             w++
             if(charCount+printWords[w].length >= charSpace){
                 $('<br>').insertBefore('.cursor');
                 charCount=0;
             }
-            
-            
+
+
         }else{
-        
-            c++        
+
+            c++
         }
-        
-        
+
+
         screen.scrollTop = screen.scrollHeight;
-        
+
         i++
-        
+
         if(i==input.length){
             stopPrinting();
         }
-        
+
     },interval);
 
     $('#display').append('<br>');
@@ -321,17 +340,17 @@ return input.replace(/ /g, "&nbsp");
 function run(input){
     commandNotFound = true;
     //console.log("input:"+input);
-    
+
     inputOpen = false;
     //words = input.replace(/ /g, "| |").replace(/\|\|/g, "|").split('|');
     words = input.split(' ');
-    
-    
+
+
     command = words.shift();
     //words.shift();//remove leading space
-    
+
     console.log(words);
-    
+
     for( var c in commands ){
         //console.log(c+":"+commands[c].name);
         if(commands[c].name == command){
@@ -340,17 +359,17 @@ function run(input){
             commands[c].exe(words);
             break;
         }
-    
+
     }
     if(commandNotFound){
         echo.exe(command+": command not found. type help for a list of commands.");
         inputOpen = true;
-        return; 
+        return;
     }
 
     //I guess this has to be in the .exe function...
     //inputOpen = true;
-    
+
     return
 
 }
@@ -362,16 +381,16 @@ function makeAllCharSpaces(){
     $('.command').each(function(e){
         //console.log($(this).html());
         outputHtml = '';
-        
+
         for(var c in $(this).html()){
             console.log($(this).html()[c]);
             outputHtml = outputHtml + '<div class="charSpace animateIn">'+$(this).text()[c]+'</div>';
-            
+
         }
         $(this).html(outputHtml);
-        
+
     });
-    
+
 
 }
 
@@ -379,11 +398,11 @@ function makeAllCharSpaces(){
 /***used to start the on idle timer***/
 
 function startCountDown(countDown){
-    
-    
+
+
     if(typeof(countDownTimer) == "undefined"){
         console.log("starting countDown");
-    
+
         countDownTimer = setTimeout(function(){
             console.log("timer reached");
             reddit.exe(10)
@@ -413,68 +432,68 @@ $(function(){
     inputOpen = true;
     screen = document.getElementById('screen');
 
-    
+
 
     startCountDown(30);
-    
-    
+
+
     $(document).keypress(function(e){
         //console.log('keypress');
-       
-        
+
+
         if(inputOpen){
 
             stopCountDown();
             startCountDown(30);
             console.log("resetting timer");
-        
+
             e = e || window.e;
             var code = e.which || e.keyCode;
             var char = String.fromCharCode(code);
 
             //console.log(code+":"+char);
-        
+
             switch(code){
                 //up down arrows…
-               
+
                //return
                 case 13:
-                    
+
                     //$('#display').append("<p class='command'>guest@box:~$"+$('#input').text()+"</p><br>");
                     $('#display').append('<p class="command">'+promptText+$('#input').text()+'</p><br>');
-                    
+
                     if($('#input').text() != ""){
                         run($('#input').text());
                     }
                     $('#input').text("");
                     screen.scrollTop = screen.scrollHeight;
- 
+
                 break;
-                
-                
+
+
                 //backspace
                 case 8:
                     $('#input').text( $('#input').text().slice(0,-1) );
-                    
+
                     break;
-                
-                
+
+
                 //tab
 
-                default: 
+                default:
                     $('#input').append(char);
                     break;
             }
- 
+
         }
-        
-        
-        
+
+
+
     });
-    
-    
-    
-    
+
+
+
+
 
 
 });
