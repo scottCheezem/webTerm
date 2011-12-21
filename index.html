@@ -180,12 +180,12 @@ var reset = new shellCommand("reset", "reset the terminal (reloads page)", funct
 
 
 var reddit = new shellCommand("reddit", "The Front Page of the Intenet", function(count){
-
+    
     echo.exe("Reddit - The Front Page of the Intenet");
-
+    
     redditText= "";
-
-    $.getJSON("http://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) {
+    
+    $.getJSON("http://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) { 
         //console.log(data);
         redditdata = data;
         reddits = data.data.children;
@@ -198,14 +198,14 @@ var reddit = new shellCommand("reddit", "The Front Page of the Intenet", functio
                 selfText = post.selftext.replace(/\n/g, " \\\\ ")+" \\\\ \\\\ ";
                 //console.log(selfText);
             }
-            redditText = redditText + post.title+" \\\\ \\\\ "+selfText+" submited by "+post.author+" \\\\ to "+post.subreddit+" \\\\ "+ convertDate(post.created_utc) +" \\\\ \\\\ ";
-
+            redditText = redditText + post.title+" \\\\ \\\\ "+selfText+" submited "+timePassed(post.created_utc)+" \\\\ by "+post.author+" \\\\ to "+post.subreddit+" [score: "+post.score+"] \\\\ \\\\ ";
+        
         }
         timedPrint(redditText, 75);
     });
-
-
-
+        
+    
+    
 });
 
 
@@ -242,8 +242,7 @@ function timedPrint(input, interval){
             $('#input').show();
             $('p.cursor').remove().appendTo('#screen');
             screen.scrollTop = screen.scrollHeight;
-            //clear.exe();
-            reddit.exe();
+            
             //startCountDown(10);
 
 
@@ -328,6 +327,28 @@ function convertDate(utc){
 
 }
 
+function timePassed(utc) {
+		//var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
+        var date = new Date(0);
+        date.setUTCSeconds(utc);
+        
+        
+		diff = (((new Date()).getTime() - date.getTime()) / 1000),
+		day_diff = Math.floor(diff / 86400);
+
+		if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+			return;
+
+		return day_diff == 0 && (
+			diff < 60 && "just now" ||
+			diff < 120 && "1 minute ago" ||
+			diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+			diff < 7200 && "1 hour ago" ||
+			diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+		day_diff == 1 && "Yesterday" ||
+		day_diff < 7 && day_diff + " days ago" ||
+		day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+	}
 
 
 function htmlSpecials(input){
@@ -374,6 +395,34 @@ function run(input){
 
 }
 
+function fallDown(){
+    makeAllCharSpaces();
+    charSpaces = $('.charSpace');
+    M=1500;
+    N=3000;
+    for(var c=0; c<charSpaces.length ; c++){        
+        randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N        
+        charSpaces[c].style.webkitTransition = "all "+randomTime+" ms";
+        charSpaces[c].style.webkitTransform = "translateY("+parseInt(500)+"px)";   
+        charSpaces[c].style.opacity = 0;
+    }
+    
+    
+    //setTimeout(fallUp(), 5000);
+}
+
+//this assumes fallDwon and clear.exe() have already been called...
+function fallUp(){
+    console.log("falling up");
+    for (var c=0 ; c<$('.charSpace').size() ; c++){
+        console.log($('.charSpace')[c]);
+        $('.charSpace')[c].style.webkitTransform = "";
+        $('.charSpace')[c].style.opacity= 1;
+    
+    }
+    //clear.exe();
+
+}
 
 
 function makeAllCharSpaces(){
@@ -431,10 +480,10 @@ $(document).ready(function(){
 $(function(){
     inputOpen = true;
     screen = document.getElementById('screen');
+    timout = 30
 
 
-
-    startCountDown(30);
+    startCountDown(timeout);
 
 
     $(document).keypress(function(e){
@@ -444,7 +493,7 @@ $(function(){
         if(inputOpen){
 
             stopCountDown();
-            startCountDown(30);
+            startCountDown(timeout);
             console.log("resetting timer");
 
             e = e || window.e;
