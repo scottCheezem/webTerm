@@ -483,6 +483,28 @@ $(function(){
     timeout = 30
 
 
+
+    $('#screen').scroll(function(e){
+    
+        console.log('scroll happens');
+
+        
+        $('#display').children().each(function(){
+
+            if($(this).offset().top + $(this).height() < 0){
+
+                $(this).remove()
+                //make a sweet animation happen here where this get launched in to the horrizon
+                //also…make it so new characters coming in get launched from 
+            
+            }
+        });
+
+        
+    
+    });
+
+
     startCountDown(timeout);
 
 
