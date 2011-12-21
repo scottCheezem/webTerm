@@ -24,6 +24,22 @@ font-family:ds_term;src:url('DS_TERM.TTF') format("truetype")
 
 body{background-color:black;}
 
+#background{
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:-1;
+    /*background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#000), to(#FFF));*/
+    background: -webkit-radial-gradient(circle, white, black);
+    height: 100%;
+    width:100%;
+    opacity:0;
+    -webkit-transition: all 2s;
+
+
+}
+
 *{
 padding:0px;
 margin:0px;
@@ -327,6 +343,8 @@ function convertDate(utc){
 
 }
 
+
+//make this also support twitters timestamp
 function timePassed(utc) {
 		//var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
         var date = new Date(0);
@@ -398,6 +416,7 @@ function run(input){
 function fallDown(){
     makeAllCharSpaces();
     charSpaces = $('.charSpace');
+    //time in ms
     M=1500;
     N=3000;
     for(var c=0; c<charSpaces.length ; c++){        
@@ -472,7 +491,7 @@ function stopCountDown(){
 
 $(document).ready(function(){
 
-    $('body').html('<div id="screen" style="height:99%"><div id="display"></div><p id="prompt" class="command">'+userName+'@'+host+':~$</p><p id="input" class="command"></p><p class="cursor blinking"></p></div>');
+    $('body').html('<div id="screen" style="height:99%"><div id="background" ></div><div id="display"></div><p id="prompt" class="command">'+userName+'@'+host+':~$</p><p id="input" class="command"></p><p class="cursor blinking"></p></div>');
 
 });
 
@@ -481,16 +500,34 @@ $(function(){
     inputOpen = true;
     screen = document.getElementById('screen');
     timeout = 30
+    $('#background')[0].style.opacity = 0;
 
-
+    fadeIn = true;
 
     $('#screen').scroll(function(e){
-    
+        console.log($('#background')[0].style.opacity);
         console.log('scroll happens');
+        if(fadeIn){
+            $('#background')[0].style.opacity = parseFloat($('#background')[0].style.opacity)+.001
+            console.log($('#background')[0].style.opacity);
+            if($('#background')[0].style.opacity == 1){
+                fadeIn = false;
+            }
+            
+            
+        }else{
+            $('#background')[0].style.opacity =parseFloat($('#background')[0].style.opacity)-.001;
+            console.log($('#background')[0].style.opacity);
+            if($('#background')[0].style.opacity == 0){
+                fadeIn = true;
+            }
 
         
+        }
+        
+        
         $('#display').children().each(function(){
-
+            //this is cool cause it remove <p> as they come by…but it also needs to deal with <br> which is hard to do without removin them all...
             if($(this).offset().top + $(this).height() < 0){
 
                 $(this).remove()
@@ -575,6 +612,7 @@ $(function(){
 <body>
 
 <!--<div id="screen" style="height:99%">
+    <div id="background" ></div>
     <div id="display"></div>
     <p id="prompt" class="command">guest@box:~$</p><p id="input" class="command"></p><p class="cursor blinking"></p>
 </div>-->
