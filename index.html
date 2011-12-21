@@ -510,7 +510,7 @@ $(function(){
         if(fadeIn){
             $('#background')[0].style.opacity = parseFloat($('#background')[0].style.opacity)+.001
             console.log($('#background')[0].style.opacity);
-            if($('#background')[0].style.opacity == 1){
+            if($('#background')[0].style.opacity >= 1){
                 fadeIn = false;
             }
             
@@ -518,7 +518,7 @@ $(function(){
         }else{
             $('#background')[0].style.opacity =parseFloat($('#background')[0].style.opacity)-.001;
             console.log($('#background')[0].style.opacity);
-            if($('#background')[0].style.opacity == 0){
+            if($('#background')[0].style.opacity <= 0){
                 fadeIn = true;
             }
 
