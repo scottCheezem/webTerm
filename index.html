@@ -35,7 +35,7 @@ body{background-color:black;}
     height: 100%;
     width:100%;
     opacity:0;
-    -webkit-transition: all 2s;
+    -webkit-transition: opacity .5s;
 
 
 }
@@ -166,6 +166,7 @@ var clear = new shellCommand("clear", "clear the screen", function(){
     //add some animation to the foo function and call it here…
     //maybe if an arg is given?
     $('#display').html("");
+    $('#background')[0].style.opacity = 0;
 
 });
 
@@ -413,18 +414,20 @@ function run(input){
 
 }
 
-function fallDown(){
-    makeAllCharSpaces();
-    charSpaces = $('.charSpace');
-    //time in ms
-    M=1500;
-    N=3000;
-    for(var c=0; c<charSpaces.length ; c++){        
-        randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N        
-        charSpaces[c].style.webkitTransition = "all "+randomTime+" ms";
-        charSpaces[c].style.webkitTransform = "translateY("+parseInt(500)+"px)";   
-        charSpaces[c].style.opacity = 0;
-    }
+function fallDown(htmlObj){
+    
+    M=1000;
+    N=2000;
+    
+    randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N        
+    htmlObj[0].style.webkitTransition = "all "+randomTime+" ms";
+    
+    htmlObj[0].style.webkitTransform = "translateY("+parseInt(500)+"px)";
+    htmlObj[0].style.opacity = 0;
+    
+    
+    //hmmm…how to remove the object from the DOM AFTER the animation coolness is complete?
+    //htmlObj.remove();
     
     
     //setTimeout(fallUp(), 5000);
@@ -530,7 +533,10 @@ $(function(){
             //this is cool cause it remove <p> as they come by…but it also needs to deal with <br> which is hard to do without removin them all...
             if($(this).offset().top + $(this).height() < 0){
 
-                $(this).remove()
+                
+                
+                fallDown($(this));
+                //$(this).remove()
                 //make a sweet animation happen here where this get launched in to the horrizon
                 //also…make it so new characters coming in get launched from 
             
