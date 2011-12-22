@@ -414,38 +414,24 @@ function run(input){
 
 }
 
-function fallDown(htmlObj){
+
+
+function fallDown(htmlObj, callback){
     
     M=1000;
     N=2000;
     
     randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N        
+    //randomTime = 5000;
     htmlObj[0].style.webkitTransition = "all "+randomTime+" ms";
     
     htmlObj[0].style.webkitTransform = "translateY("+parseInt(500)+"px)";
     htmlObj[0].style.opacity = 0;
     
-    
-    //hmmm…how to remove the object from the DOM AFTER the animation coolness is complete?
-    //htmlObj.remove();
+    htmlObj[0].addEventListener('webkitTransitionEnd', function(e){htmlObj.remove()});
     
     
-    //setTimeout(fallUp(), 5000);
 }
-
-//this assumes fallDwon and clear.exe() have already been called...
-function fallUp(){
-    console.log("falling up");
-    for (var c=0 ; c<$('.charSpace').size() ; c++){
-        console.log($('.charSpace')[c]);
-        $('.charSpace')[c].style.webkitTransform = "";
-        $('.charSpace')[c].style.opacity= 1;
-    
-    }
-    //clear.exe();
-
-}
-
 
 function makeAllCharSpaces(){
 
@@ -508,11 +494,11 @@ $(function(){
     fadeIn = true;
 
     $('#screen').scroll(function(e){
-        console.log($('#background')[0].style.opacity);
-        console.log('scroll happens');
+        //console.log($('#background')[0].style.opacity);
+        //console.log('scroll happens');
         if(fadeIn){
             $('#background')[0].style.opacity = parseFloat($('#background')[0].style.opacity)+.001
-            console.log($('#background')[0].style.opacity);
+            //console.log($('#background')[0].style.opacity);
             if($('#background')[0].style.opacity >= 1){
                 fadeIn = false;
             }
@@ -520,7 +506,7 @@ $(function(){
             
         }else{
             $('#background')[0].style.opacity =parseFloat($('#background')[0].style.opacity)-.001;
-            console.log($('#background')[0].style.opacity);
+            //console.log($('#background')[0].style.opacity);
             if($('#background')[0].style.opacity <= 0){
                 fadeIn = true;
             }
@@ -528,7 +514,10 @@ $(function(){
         
         }
         
-        
+        if( $('#display > :first').is('br') ){
+
+            $('#display > br:first').remove();
+        }
         $('#display').children().each(function(){
             //this is cool cause it remove <p> as they come by…but it also needs to deal with <br> which is hard to do without removin them all...
             if($(this).offset().top + $(this).height() < 0){
@@ -536,7 +525,8 @@ $(function(){
                 
                 
                 fallDown($(this));
-                //$(this).remove()
+
+
                 //make a sweet animation happen here where this get launched in to the horrizon
                 //also…make it so new characters coming in get launched from 
             
