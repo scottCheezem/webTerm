@@ -35,7 +35,7 @@ body{background-color:black;}
     height: 100%;
     width:100%;
     opacity:0;
-    -webkit-transition: opacity .5s;
+    /*-webkit-transition: opacity .5s;*/
 
 
 }
@@ -208,7 +208,7 @@ var reddit = new shellCommand("reddit", "The Front Page of the Intenet", functio
         reddits = data.data.children;
         for (r in reddits){
             post = reddits[r].data;
-            console.log(post);
+            //console.log(post);
             selfText = ""
             if(post.selftext != ""){
 
@@ -299,7 +299,7 @@ function timedPrint(input, interval){
             //clearInterval(timer);
         }
 
-
+        //fix this…a printWord might be something like &amp; so this won't get translated...
          $('<p class="charSpace animateIn">'+htmlSpecials(printWords[w][c])+'</p>').insertBefore('.cursor');
 
 
@@ -373,7 +373,10 @@ function timePassed(utc) {
 function htmlSpecials(input){
 
 //.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;")
-return input.replace(/ /g, "&nbsp");
+
+if(typeof(input) != "undefined"){
+    return input.replace(/ /g, "&nbsp");
+}
 
 }
 
@@ -416,7 +419,7 @@ function run(input){
 
 
 
-function fallDown(htmlObj, callback){
+function fallDown(htmlObj){
     
     M=1000;
     N=2000;
@@ -425,10 +428,10 @@ function fallDown(htmlObj, callback){
     //randomTime = 5000;
     htmlObj[0].style.webkitTransition = "all "+randomTime+" ms";
     
-    htmlObj[0].style.webkitTransform = "translateY("+parseInt(500)+"px)";
+    htmlObj[0].style.webkitTransform = "translateY("+parseInt(window.innerHeight)+"px)";
     htmlObj[0].style.opacity = 0;
     
-    htmlObj[0].addEventListener('webkitTransitionEnd', function(e){htmlObj.remove()});
+    htmlObj[0].addEventListener('webkitTransitionEnd', function(e){htmlObj.remove()}, false);
     
     
 }
@@ -522,13 +525,7 @@ $(function(){
             //this is cool cause it remove <p> as they come by…but it also needs to deal with <br> which is hard to do without removin them all...
             if($(this).offset().top + $(this).height() < 0){
 
-                
-                
                 fallDown($(this));
-
-
-                //make a sweet animation happen here where this get launched in to the horrizon
-                //also…make it so new characters coming in get launched from 
             
             }
         });
