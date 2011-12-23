@@ -129,9 +129,88 @@ opacity:1;
 $.ajax({cache:false});
 
 
-var commands = new Array();
 
-var timerStarted = false;
+shell = {
+    inputOpen:false,
+    timerStarted:false,
+
+
+
+
+    stopCountDown:function(){
+        if(typeof(countDownTimer)!="undefined"){
+            console.log("clearing timer");
+            clearTimeout(countDownTimer);
+        }
+    
+    
+    },
+    
+    startCountDown:function(countDown){
+        if(typeof(countDownTimer) == "undefined"){
+            console.log("starting countDown");
+
+            countDownTimer = setTimeout(function(){
+                console.log("timer reached");
+                reddit.exe(10)
+            }, 1000*countDown);
+        }
+    
+    },
+    
+    run:function(input){
+        commandNotFound = true;
+        //console.log("input:"+input);
+
+        this.inputOpen = false;
+        //words = input.replace(/ /g, "| |").replace(/\|\|/g, "|").split('|');
+        args = input.split(' ');
+
+
+        command = args.shift();
+        
+
+        console.log(args);
+
+        for( var c in this.commands ){
+            //console.log(c+":"+commands[c].name);
+            if(this.commands[c].name == command){
+                commandNotFound = false;
+                //console.log("running "+command);
+                this.commands[c].exe(args);
+                this.history.push(input);
+                
+                break;
+            }
+
+        }
+        if(commandNotFound){
+            echo.exe(command+": command not found. type help for a list of commands.");
+            this.inputOpen = true;
+            return;
+        }
+
+        //I guess this has to be in the .exe function...
+        this.inputOpen = true;
+
+        return 
+
+    },
+    
+    
+    commands:[],
+    history:[],
+    exeQueue:[]
+    //addEventListener for run complete that process the next in queue…this might allow for things like pipes, and screensaver type timing
+
+}
+
+
+
+
+//var commands = new Array();
+
+//var timerStarted = false;
 var userName = "guest";
 var host = window.location.hostname;
 var promptText = userName+"@"+host+":~$";
@@ -140,10 +219,19 @@ var promptText = userName+"@"+host+":~$";
 function shellCommand(n, h, m){
     this.name = n;
     this.help = h;
-    this.exe = function(input){stopCountDown() ; m(input) ; inputOpen = true ; startCountDown(30)}
+    this.exe = function(input, callBack){
+        shell.stopCountDown() ; 
+        m(input) ; 
+        return (function(){callBack()});
+    }
     //this.exe = m;
     //console.log(this.name);
-    commands.push(this);
+    
+    
+
+    
+    //commands.push(this);
+    shell.commands.push(this);
 }
 
 /*shell commands*/
@@ -152,8 +240,8 @@ function shellCommand(n, h, m){
 
 var help = new shellCommand("help", "print a help message", function(){
 
-    for (var c in commands){
-        echo.exe(commands[c].name+" - "+commands[c].help);
+    for (var c in shell.commands){
+        echo.exe(shell.commands[c].name+" - "+shell.commands[c].help);
 
     }
 
@@ -345,6 +433,9 @@ function convertDate(utc){
 }
 
 
+
+
+
 //make this also support twitters timestamp
 function timePassed(utc) {
 		//var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
@@ -370,52 +461,22 @@ function timePassed(utc) {
 	}
 
 
+
+
+
 function htmlSpecials(input){
 
-//.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;")
+    //.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;")
 
-if(typeof(input) != "undefined"){
-    return input.replace(/ /g, "&nbsp");
-}
-
-}
-
-function run(input){
-    commandNotFound = true;
-    //console.log("input:"+input);
-
-    inputOpen = false;
-    //words = input.replace(/ /g, "| |").replace(/\|\|/g, "|").split('|');
-    words = input.split(' ');
-
-
-    command = words.shift();
-    //words.shift();//remove leading space
-
-    console.log(words);
-
-    for( var c in commands ){
-        //console.log(c+":"+commands[c].name);
-        if(commands[c].name == command){
-            commandNotFound = false;
-            //console.log("running "+command);
-            commands[c].exe(words);
-            break;
-        }
-
-    }
-    if(commandNotFound){
-        echo.exe(command+": command not found. type help for a list of commands.");
-        inputOpen = true;
-        return;
+    if(typeof(input) != "undefined"){
+        return input.replace(/ /g, "&nbsp");
     }
 
-    //I guess this has to be in the .exe function...
-    //inputOpen = true;
-
-    return
-
 }
+
+
+
+
 
 
 
@@ -455,7 +516,7 @@ function makeAllCharSpaces(){
 }
 
 
-/***used to start the on idle timer***/
+/***used to start the on idle timer**
 
 function startCountDown(countDown){
 
@@ -478,7 +539,7 @@ function stopCountDown(){
     }
 }
 
-
+*/
 
 
 $(document).ready(function(){
@@ -535,7 +596,7 @@ $(function(){
     });
 
 
-    startCountDown(timeout);
+    //startCountDown(timeout);
 
 
     $(document).keypress(function(e){
@@ -544,9 +605,9 @@ $(function(){
 
         if(inputOpen){
 
-            stopCountDown();
-            startCountDown(timeout);
-            console.log("resetting timer");
+            //stopCountDown();
+            //startCountDown(timeout);
+            //console.log("resetting timer");
 
             e = e || window.e;
             var code = e.which || e.keyCode;
@@ -564,7 +625,7 @@ $(function(){
                     $('#display').append('<p class="command">'+promptText+$('#input').text()+'</p><br>');
 
                     if($('#input').text() != ""){
-                        run($('#input').text());
+                        shell.run($('#input').text());
                     }
                     $('#input').text("");
                     screen.scrollTop = screen.scrollHeight;
