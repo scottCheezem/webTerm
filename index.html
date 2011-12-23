@@ -134,31 +134,33 @@ shell = {
     inputOpen:false,
     timerStarted:false,
 
-
-
+    countDownTimer:undefined,
+    sleepCommand:function(){},
 
     stopCountDown:function(){
-        if(typeof(countDownTimer)!="undefined"){
+        if(this.countDownTimer != undefined){
             console.log("clearing timer");
-            clearTimeout(countDownTimer);
+            clearTimeout(this.countDownTimer);
+        
         }
-    
     
     },
     
     startCountDown:function(countDown){
-        if(typeof(countDownTimer) == "undefined"){
+        console.log(this);
+        if(this.countDownTimer == undefined){
             console.log("starting countDown");
 
-            countDownTimer = setTimeout(function(){
+            this.countDownTimer = setTimeout(function(){
                 console.log("timer reached");
-                reddit.exe(10)
+                
+                window.shell.sleepCommand();
             }, 1000*countDown);
         }
     
     },
     
-    run:function(input){
+    run:function(input, callback){
         commandNotFound = true;
         //console.log("input:"+input);
 
@@ -177,9 +179,10 @@ shell = {
             if(this.commands[c].name == command){
                 commandNotFound = false;
                 //console.log("running "+command);
-                this.commands[c].exe(args);
+                this.commands[c].exe(args, callback);
                 this.history.push(input);
-                
+                foo = arguments.callee.name
+                console.log(foo);
                 break;
             }
 
@@ -224,13 +227,7 @@ function shellCommand(n, h, m){
         m(input) ; 
         return (function(){callBack()});
     }
-    //this.exe = m;
-    //console.log(this.name);
     
-    
-
-    
-    //commands.push(this);
     shell.commands.push(this);
 }
 
@@ -335,7 +332,7 @@ var twitter = new shellCommand("twitter", "The Twitters", function(input) {
   }
 });
 
-function timedPrint(input, interval){
+function timedPrint(input, interval, callback){
     stopPrinting  = function(){
             //document.body.removeEventListener("keypress");
             //console.log("stopping print");
@@ -347,8 +344,8 @@ function timedPrint(input, interval){
             $('#input').show();
             $('p.cursor').remove().appendTo('#screen');
             screen.scrollTop = screen.scrollHeight;
-            
-            //startCountDown(10);
+            shell.starCountDown(timer);
+
 
 
     }
@@ -384,7 +381,7 @@ function timedPrint(input, interval){
             i+=2;
             //console.log("read forced line break");
             $('<br>').insertBefore('.cursor');
-            //clearInterval(timer);
+
         }
 
         //fix this…a printWord might be something like &amp; so this won't get translated...
@@ -516,43 +513,23 @@ function makeAllCharSpaces(){
 }
 
 
-/***used to start the on idle timer**
-
-function startCountDown(countDown){
-
-
-    if(typeof(countDownTimer) == "undefined"){
-        console.log("starting countDown");
-
-        countDownTimer = setTimeout(function(){
-            console.log("timer reached");
-            reddit.exe(10)
-        }, 1000*countDown);
-    }
-}
-
-
-function stopCountDown(){
-    if(typeof(countDownTimer)!="undefined"){
-        console.log("clearing timer");
-        clearTimeout(countDownTimer);
-    }
-}
-
-*/
 
 
 $(document).ready(function(){
-
+    shell.startCountDown(5);    
     $('body').html('<div id="screen" style="height:99%"><div id="background" ></div><div id="display"></div><p id="prompt" class="command">'+userName+'@'+host+':~$</p><p id="input" class="command"></p><p class="cursor blinking"></p></div>');
 
 });
 
 
 $(function(){
-    inputOpen = true;
+
+//    shell.sleepCommand = function(){return reddit.exe()};
+    shell.sleepCommand = function(){return shell.run(reddit.exe())};
+    console.log(shell.sleepCommand);
+    inputOpen = true;    
     screen = document.getElementById('screen');
-    timeout = 30
+    timeout = 1
     $('#background')[0].style.opacity = 0;
 
     fadeIn = true;
@@ -596,7 +573,7 @@ $(function(){
     });
 
 
-    //startCountDown(timeout);
+    //shell.startCountDown(timeout);
 
 
     $(document).keypress(function(e){
@@ -605,9 +582,9 @@ $(function(){
 
         if(inputOpen){
 
-            //stopCountDown();
-            //startCountDown(timeout);
-            //console.log("resetting timer");
+            shell.stopCountDown();
+            shell.startCountDown(timeout);
+            
 
             e = e || window.e;
             var code = e.which || e.keyCode;
@@ -621,7 +598,7 @@ $(function(){
                //return
                 case 13:
 
-                    //$('#display').append("<p class='command'>guest@box:~$"+$('#input').text()+"</p><br>");
+
                     $('#display').append('<p class="command">'+promptText+$('#input').text()+'</p><br>');
 
                     if($('#input').text() != ""){
