@@ -233,7 +233,14 @@ function shellCommand(n, h, m){
 
 /*shell commands*/
 
+var about = new shellCommand("about", "All about this page", function(){
 
+    aboutString = "This little terminal emulator is based on my favorite Xscreensaver - Phosphor.  The commands are limited for now, but I may expand it in the future.  Its on github, so Fork Me! \\\\ \\\\";
+    
+    timedPrint(aboutString, 75);
+
+
+});
 
 var help = new shellCommand("help", "print a help message", function(){
 
