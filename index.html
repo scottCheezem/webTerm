@@ -61,7 +61,7 @@ font-size:45px;
     font-size:45px;
     color:#66ff00;
     opacity:0;
-    <!--float:left;-->
+    /*float:left;*/
     text-align:center;
 }
 
@@ -139,7 +139,7 @@ shell = {
 
     stopCountDown:function(){
         if(this.countDownTimer != undefined){
-            console.log("clearing timer");
+            //console.log("clearing timer");
             clearTimeout(this.countDownTimer);
         
         }
@@ -147,12 +147,12 @@ shell = {
     },
     
     startCountDown:function(countDown){
-        console.log(this);
+        //console.log(this);
         if(this.countDownTimer == undefined){
-            console.log("starting countDown");
+            //console.log("starting countDown");
 
             this.countDownTimer = setTimeout(function(){
-                console.log("timer reached");
+                //console.log("timer reached");
                 
                 window.shell.sleepCommand();
             }, 1000*countDown);
@@ -172,7 +172,7 @@ shell = {
         command = args.shift();
         
 
-        console.log(args);
+        //console.log(args);
 
         for( var c in this.commands ){
             //console.log(c+":"+commands[c].name);
@@ -181,8 +181,8 @@ shell = {
                 //console.log("running "+command);
                 this.commands[c].exe(args, callback);
                 this.history.push(input);
-                foo = arguments.callee.name
-                console.log(foo);
+                //foo = arguments.callee.name
+                //console.log(foo);
                 break;
             }
 
@@ -317,7 +317,7 @@ var reddit = new shellCommand("reddit", "The Front Page of the Intenet", functio
     
 });
 
-
+/* //twitter API v1.1 requires oAuth even for reading public timelines BOOOO!!!!
 var twitter = new shellCommand("twitter", "The Twitters", function(input) {
   // validate that we have input
   if (!input[0]) {
@@ -338,6 +338,8 @@ var twitter = new shellCommand("twitter", "The Twitters", function(input) {
     });
   }
 });
+*/
+
 
 function timedPrint(input, interval, callback){
     stopPrinting  = function(){
@@ -351,7 +353,7 @@ function timedPrint(input, interval, callback){
             $('#input').show();
             $('p.cursor').remove().appendTo('#screen');
             screen.scrollTop = screen.scrollHeight;
-            shell.starCountDown(timer);
+            shell.startCountDown(timer);
 
 
 
@@ -489,9 +491,12 @@ function fallDown(htmlObj){
     M=1000;
     N=2000;
     
-    randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N        
+    randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N
     //randomTime = 5000;
-    htmlObj[0].style.webkitTransition = "all "+randomTime+" ms";
+    //console.log(randomTime);
+    //console.log(htmlObj[0]);
+    
+    htmlObj[0].style.webkitTransition = "all "+randomTime+"ms";
     
     htmlObj[0].style.webkitTransform = "translateY("+parseInt(window.innerHeight)+"px)";
     htmlObj[0].style.opacity = 0;
@@ -508,7 +513,7 @@ function makeAllCharSpaces(){
         outputHtml = '';
 
         for(var c in $(this).html()){
-            console.log($(this).html()[c]);
+            //console.log($(this).html()[c]);
             outputHtml = outputHtml + '<div class="charSpace animateIn">'+$(this).text()[c]+'</div>';
 
         }
@@ -531,9 +536,9 @@ $(document).ready(function(){
 
 $(function(){
 
-//    shell.sleepCommand = function(){return reddit.exe()};
-    shell.sleepCommand = function(){return shell.run(reddit.exe())};
-    console.log(shell.sleepCommand);
+
+    //shell.sleepCommand = function(){return shell.run(reddit.exe())};
+    //console.log(shell.sleepCommand);
     inputOpen = true;    
     screen = document.getElementById('screen');
     timeout = 1
@@ -542,11 +547,9 @@ $(function(){
     fadeIn = true;
 
     $('#screen').scroll(function(e){
-        //console.log($('#background')[0].style.opacity);
-        //console.log('scroll happens');
+        /* //this would be cool but I wanted to do more with it.
         if(fadeIn){
             $('#background')[0].style.opacity = parseFloat($('#background')[0].style.opacity)+.001
-            //console.log($('#background')[0].style.opacity);
             if($('#background')[0].style.opacity >= 1){
                 fadeIn = false;
             }
@@ -554,13 +557,12 @@ $(function(){
             
         }else{
             $('#background')[0].style.opacity =parseFloat($('#background')[0].style.opacity)-.001;
-            //console.log($('#background')[0].style.opacity);
             if($('#background')[0].style.opacity <= 0){
                 fadeIn = true;
             }
 
         
-        }
+        }*/
         
         if( $('#display > :first').is('br') ){
 
