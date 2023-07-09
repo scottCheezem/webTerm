@@ -1,5 +1,6 @@
 <html>
 <head>
+<script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript">
 
 function staticLoadScript(url)
@@ -8,11 +9,7 @@ function staticLoadScript(url)
 }
 if (typeof jQuery == 'undefined'){
 //staticLoadScript("http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js");
-staticLoadScript("http://code.jquery.com/jquery-latest.min.js");
-
-
-
-
+// staticLoadScript("http://code.jquery.com/jquery-latest.min.js");
 }
 </script>
 
@@ -294,7 +291,7 @@ var reddit = new shellCommand("reddit", "The Front Page of the Intenet", functio
     
     redditText= "";
     
-    $.getJSON("http://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) { 
+    $.getJSON("https://www.reddit.com/.json?limit="+count+"&jsonp=?", function(data) { 
         //console.log(data);
         redditdata = data;
         reddits = data.data.children;
@@ -491,7 +488,7 @@ function fallDown(htmlObj){
     M=1000;
     N=2000;
     
-    randomTime = Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N
+    randomTime = 0//Math.floor(M + (1+N-M)*Math.random())  // num is random integer from M to N M<N
     //randomTime = 5000;
     //console.log(randomTime);
     //console.log(htmlObj[0]);
@@ -530,12 +527,16 @@ function makeAllCharSpaces(){
 $(document).ready(function(){
     shell.startCountDown(5);    
     $('body').html('<div id="screen" style="height:99%"><div id="background" ></div><div id="display"></div><p id="prompt" class="command">'+userName+'@'+host+':~$</p><p id="input" class="command"></p><p class="cursor blinking"></p></div>');
-
+    let locationInput = window.location.hash.replace('#', '').replace('_', ' ');
+    console.log(locationInput);
+    if (locationInput.length > 0) {
+        shell.run(locationInput);
+    }    
+    
 });
 
 
 $(function(){
-
 
     //shell.sleepCommand = function(){return shell.run(reddit.exe())};
     //console.log(shell.sleepCommand);
